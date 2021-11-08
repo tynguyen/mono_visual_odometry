@@ -1,1 +1,2 @@
-# mono_visual_odometry
+# Mono Visual Odometry
+This represents a simple implementation of mono visual odometry uisng two different approaches to feature tracking. The first one uses KLT to track feature across two frames while the latter uses a feature matching approach.
