@@ -1,7 +1,9 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <Eigen/Core>
 #include <opencv2/core/core.hpp>
+#include <opencv2/core/eigen.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/features2d/features2d.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
@@ -21,13 +23,16 @@
 #define MIN_NUM_FEATURES 2000
 #endif
 
-
+// Use a MACRO to let the compiler know when to compile this main function (for application) or not (for unit testing)
+// To compile this application, define the macro -DTESTING=0 or (OFF) or False
+#ifndef TESTING
 int main(int argc, char** argv){
 	// Visualization
 	cv::namedWindow("Cam Video",  cv::WINDOW_AUTOSIZE);
 	cv::namedWindow("Trajectory", cv::WINDOW_AUTOSIZE);
 
-	// Dump result to a file
+
+	// Dump result to a fileTHIRD_PARTY_LIBS
 	std::ofstream outfile;
 	if (argc == 3)
 		outfile.open(argv[2]);
@@ -40,6 +45,14 @@ int main(int argc, char** argv){
 	if (argc >= 2)
 		sequence_path = std::string(argv[1]);
 	std::string src_img_path = sequence_path + "/image_1";
+
+	// Predicted trajecatory
+	std::vector<Sophus::SE3d, Eigen::aligned_allocator<Sophus::SE3d>> pred_trajectory;
+
+	// Ground truth trajectory
+	char gt_traj_filename[256];
+	std::sprintf(gt_traj_filename, "%s/pose.txt", sequence_path.c_str());
+	std::vector<Sophus::SE3d, Eigen::aligned_allocator<Sophus::SE3d>> gt_trajectory = io_utils::readTrajectoryFromFile(gt_traj_filename);
 
 	char img_name[256];
 	std::sprintf(img_name, "%s/%06d.png", src_img_path.c_str(), 0);
@@ -94,7 +107,7 @@ int main(int argc, char** argv){
 	cv::Mat frames_combined;
 	feature_utils::drawMatchesUsingPoint2f(img_prev_color, points_prev, img_curr_color, points_curr, frames_combined);
 	cv::resize(frames_combined, frames_combined, cv::Size(), 0.5, 0.5);
-	cv::imshow("Front cam", frames_combined);
+	cv::imshow("Cam Video", frames_combined);
 
 	// Computer essential matrix
 	// Get the camera matrix
@@ -125,11 +138,16 @@ int main(int argc, char** argv){
 	cv::Mat t_f = t.clone();
 
 	// Get the scale
-	char gt_traj_filename[256];
-	std::sprintf(gt_traj_filename, "%s/pose.txt", sequence_path.c_str());
 	std::vector<double> pred_t_vec = {t.at<double>(0), t.at<double>(1), t.at<double>(2)};
 	double scale = io_utils::getAbsoluteScaleFromFile(gt_traj_filename, 1, pred_t_vec);
 	t_f *= scale;
+	// Append the predicted pose to the history
+	Eigen::Matrix3d R_eigen_pred;
+	Eigen::Vector3d t_eigen_pred;
+	cv::cv2eigen(R_f, R_eigen_pred);
+	cv::cv2eigen(t_f, t_eigen_pred);
+	Sophus::SE3d T_se3d_pred(R_eigen_pred, t_eigen_pred);
+	pred_trajectory.push_back(T_se3d_pred);
 
 	int traj_width = 1400, traj_height = 1400;
 	cv::Mat traj_mat = cv::Mat::zeros(traj_width, traj_height, CV_8UC3);
@@ -190,8 +208,15 @@ int main(int argc, char** argv){
 		points_prev = points_curr;
 		keypoints_prev = keypoints_curr;
 		img_prev_color = img_curr_color.clone();
+
+		// Convert the predicted R, t to SE3d
+		cv::cv2eigen(R_f, R_eigen_pred);
+		cv::cv2eigen(t_f, t_eigen_pred);
+		Sophus::SE3d T_se3d_pred(R_eigen_pred, t_eigen_pred);
+		pred_trajectory.push_back(T_se3d_pred);
 	}
 
 	cv::destroyAllWindows();
 	return 0;
 }
+#endif

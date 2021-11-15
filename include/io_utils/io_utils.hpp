@@ -5,7 +5,9 @@
 #include <vector>
 #include <fstream>
 #include <sstream>
-
+#include <sophus/se3.hpp>
+#include <Eigen/Core>
+#include <Eigen/Geometry>
 
 namespace io_utils{
 	void readIthCamMatFromFile(const std::string& file_path, const int& i, double &fx, double &fy, double &cx, double &cy);
@@ -15,6 +17,7 @@ namespace io_utils{
 	// template<typename T>
 	std::vector<double> line2ValuesByIndices(const std::string& line, std::vector<int> & indices);
 
+	std::vector<Sophus::SE3d, Eigen::aligned_allocator<Sophus::SE3d>> readTrajectoryFromFile(const std::string& file_path);
 };
 
 
@@ -107,4 +110,29 @@ std::vector<double> io_utils::line2ValuesByIndices(const std::string& line, std:
 		token_idx ++;
 	}
 	return values;
+}
+
+std::vector<Sophus::SE3d, Eigen::aligned_allocator<Sophus::SE3d>> io_utils::readTrajectoryFromFile(const std::string& file_path){
+	/*
+		@Brief: read the trajectory from the file and return a vector of SE3d. Only work with the kitti odometry dataset
+		@Args:
+			file_path: path to the file
+		@Return:
+			trajectory
+	*/
+	std::ifstream traj_file(file_path);
+	if (!traj_file.is_open()) {
+		std::cerr << "Error: Trajectory file could not be opened!" << std::endl;
+		return std::vector<Sophus::SE3d, Eigen::aligned_allocator<Sophus::SE3d>>();
+	}
+	std::string line;
+	std::vector<Sophus::SE3d, Eigen::aligned_allocator<Sophus::SE3d>> trajectory;
+	while (std::getline(traj_file, line)) {
+		std::stringstream ss(line);
+		double time, tx, ty, tz, qx, qy, qz, qw;
+		ss >> time >> tx >> ty >> tz >> qx >> qy >> qz >> qw;
+		Sophus::SE3d pose(Eigen::Quaterniond(qx, qy, qz, qw), Eigen::Vector3d(tx, ty, tz));
+		trajectory.push_back(pose);
+	}
+	return trajectory;
 }
