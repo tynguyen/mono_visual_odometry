@@ -1,49 +1,49 @@
 Results: 
 * Seq 1
-ATE: 119.919
-ATE trans: 119.919
-ATE rot: 0.223981
-Relative pose error: 0.929377
+ATE: 179.852
+ATE trans: 179.852
+ATE rot: 0.290825
+Relative pose error: 0.914792
 ----------------------------------------
 * Seq 2
-ATE: 289.499
-ATE trans: 289.499
-ATE rot: 0.366762
-Relative pose error: 0.0428653
+ATE: 92.9432
+ATE trans: 92.9423
+ATE rot: 0.413809
+Relative pose error: 0.0415617
 ----------------------------------------
 * Seq 3
-ATE: 32.606
-ATE trans: 32.6043
-ATE rot: 0.334615
-Relative pose error: 0.034147
+ATE: 37.897
+ATE trans: 37.895
+ATE rot: 0.381783
+Relative pose error: 0.0418596
 ----------------------------------------
 * Seq 4
-ATE: 3.09977
-ATE trans: 3.0996
-ATE rot: 0.0325276
-Relative pose error: 0.0350668
+ATE: 3.29603
+ATE trans: 3.29577
+ATE rot: 0.0410744
+Relative pose error: 0.0414157
 ----------------------------------------
 * Seq 5
-ATE: 151.503
-ATE trans: 151.499
-ATE rot: 1.0607
-Relative pose error: 0.0252317
+ATE: 105.63
+ATE trans: 105.625
+ATE rot: 0.936299
+Relative pose error: 0.0309155
 ----------------------------------------
 * Seq 6
-ATE: 32.5918
-ATE trans: 32.5915
-ATE rot: 0.145583
-Relative pose error: 0.0413401
+ATE: 25.3598
+ATE trans: 25.3595
+ATE rot: 0.128952
+Relative pose error: 0.0448468
 ----------------------------------------
 * Seq 7
-ATE: 20.8467
-ATE trans: 20.8334
-ATE rot: 0.74387
-Relative pose error: 0.0413667
+ATE: 129.081
+ATE trans: 129.07
+ATE rot: 1.66665
+Relative pose error: 0.041469
 ----------------------------------------
 * Seq 8
-ATE: 216.629
-ATE trans: 216.629
-ATE rot: 0.424238
-Relative pose error: 0.0430153
+ATE: 715.996
+ATE trans: 715.99
+ATE rot: 2.80526
+Relative pose error: 0.0489337
 ----------------------------------------

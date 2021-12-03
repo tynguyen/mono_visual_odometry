@@ -8,11 +8,14 @@
 #include <sophus/se3.hpp>
 #include <Eigen/Core>
 #include <Eigen/Geometry>
+#include <opencv2/core/core.hpp>
 
 namespace io_utils{
 	void readIthCamMatFromFile(const std::string& file_path, const int& i, double &fx, double &fy, double &cx, double &cy);
 
 	double getAbsoluteScaleFromFile(const std::string& filepath, const int & frame_id, const std::vector<double> & pred_t);
+	// Overloaded function
+	double getAbsoluteScaleFromFile(const std::string& filepath, const int & frame_id, const cv::Mat & pred_t_mat);
 
 	// template<typename T>
 	std::vector<double> line2ValuesByIndices(const std::string& line, std::vector<int> & indices);
@@ -104,6 +107,17 @@ double io_utils::getAbsoluteScaleFromFile(const std::string& filepath, const int
 	// This might be unnecessary since the pred_t is already normalized thanks to OpenCV
 	scale /= std::sqrt(std::pow(pred_t[0], 2) + std::pow(pred_t[1], 2) + std::pow(pred_t[2], 2));
 	file.close();
+}
+
+// Overloaded function
+double io_utils::getAbsoluteScaleFromFile(const std::string& filepath, const int & frame_id, const cv::Mat & pred_t_mat){
+	// Convert cv::Mat to std::vector<double>
+	std::vector<double> pred_t_vec = {
+		pred_t_mat.at<double>(0),
+		pred_t_mat.at<double>(1),
+		pred_t_mat.at<double>(2),
+	};
+	return getAbsoluteScaleFromFile(filepath, frame_id, pred_t_vec);
 }
 
 // template<typename T>

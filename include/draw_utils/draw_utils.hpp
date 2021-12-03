@@ -58,12 +58,8 @@ void draw_utils::add_pose_to_trajectory_plot(cv::Mat& img, const std::vector<dou
 		Output:
 			img: image with pose added
 	*/
-	// Plot dims
-	int plot_width = img.cols, plot_height = img.rows;
-	// Find x, y coordinates
-	int x = int(trans_vec.at(0));
-	int y = int(trans_vec.at(1));
-	cv::circle(img, cv::Point(x, y), 1, color, line_thickness);
+	cv::Mat trans_mat = (cv::Mat_<double>(2,1) << trans_vec.at(0), trans_vec.at(1));
+	add_pose_to_trajectory_plot(img, trans_mat, color, line_thickness);
 }
 
 // Overwrite
@@ -78,10 +74,6 @@ void draw_utils::add_pose_to_trajectory_plot(cv::Mat& img, const cv::Point2d & t
 		Output:
 			img: image with pose added
 	*/
-	// Plot dims
-	int plot_width = img.cols, plot_height = img.rows;
-	// Find x, y coordinates
-	int x = int(trans_point.x);
-	int y = int(trans_point.y);
-	cv::circle(img, cv::Point(x, y), 1, color, line_thickness);
+	cv::Mat trans_mat = (cv::Mat_<double>(2,1) << trans_point.x, trans_point.y);
+	add_pose_to_trajectory_plot(img, trans_mat, color, line_thickness);
 }
